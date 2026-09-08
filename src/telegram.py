@@ -83,7 +83,7 @@ class TelegramClient:
     """
     def __init__(self) -> None:
         self.settings = get_settings()
-        self.base_url = f"https://api.telegram.org/bot{self.settings.telegram_token}"
+        self.base_url = f"{self.settings.telegram_origin}/bot{self.settings.telegram_token}"
         self.client = httpx.AsyncClient()
 
     async def __aenter__(self) -> "TelegramClient":

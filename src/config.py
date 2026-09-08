@@ -21,6 +21,10 @@ class Settings(BaseSettings):
         default="",
         description="Telegram bot token from BotFather.",
     )
+    telegram_origin: str = Field(
+        default="https://api.telegram.org",
+        description="Telegram Bot API address where requests are sent.",
+    )
     telegram_webhook_enable: bool = Field(
         default=False,
         description="Receive bot updates using webhook endpoint call instead of long polling.",
