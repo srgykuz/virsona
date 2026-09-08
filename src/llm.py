@@ -374,6 +374,8 @@ class ModelClient:
         content = content.replace("—", "-")
         content = content.replace("«", '"')
         content = content.replace("»", '"')
+        content = content.replace("“", '"')
+        content = content.replace("”", '"')
 
         return content
 
