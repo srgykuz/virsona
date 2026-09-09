@@ -315,6 +315,7 @@ async def handle_message(message: TelegramMessage) -> None:
     chat_id = message.chat_id
     text = (message.text or "").strip()
     user = message.user()
+    last_ts = (message.date or int(time()))
 
     if not chat_id or not text:
         return
@@ -338,15 +339,15 @@ async def handle_message(message: TelegramMessage) -> None:
         await telegram_client.send_message(chat_id=chat_id, text=response, mode_markdown=True)
         return
 
-    session_client.set_user(chat_id, message.user())
-    session_client.set_last_user_message_timestamp(chat_id, message.date or int(time()))
+    session_client.set_user(chat_id, user)
+    session_client.set_last_user_message_timestamp(chat_id, last_ts)
 
     flush_token, flush_buf_len = session_client.buffer_message(chat_id, message)
     flush_force = (flush_buf_len >= settings.chat_flush_threshold)
 
     enqueue_flush_buffered_messages(chat_id, flush_token, flush_force)
     enqueue_analytics(chat_id)
-    enqueue_proactivity(chat_id)
+    enqueue_proactivity(chat_id, last_ts)
 
     logger.info(
         "Buffered update %s from %s for chat %s",
@@ -638,7 +639,7 @@ def enqueue_analytics(chat_id: int) -> None:
         )
 
 
-def enqueue_proactivity(chat_id: int) -> None:
+def enqueue_proactivity(chat_id: int, last_ts: int) -> None:
     """
     Enqueues proactivity function infinite loop.
 
@@ -650,15 +651,26 @@ def enqueue_proactivity(chat_id: int) -> None:
         proactivity.interval,
         enqueue_proactivity_loop,
         chat_id,
-        job_id=f"enqueue_proactivity_loop_{chat_id}",
+        last_ts,
+        job_id=f"enqueue_proactivity_{chat_id}",
         unique=True,
     )
 
 
-def enqueue_proactivity_loop(chat_id: int) -> None:
+def enqueue_proactivity_loop(chat_id: int, last_ts: int) -> None:
     """
     Executes proactivity function and queues its next execution.
+
+    `last_ts` is a user's last message timestamp and acting as a session token.
+    If user's current `last_ts` is equals to the passed `last_ts`, then the
+    proactivity function will be executed and queued, else the run will be skipped
+    and nothing is queued, which basically means a cancel.
     """
+    curr_last_ts = session_client.get_last_user_message_timestamp(chat_id)
+
+    if curr_last_ts != last_ts:
+        return
+
     try:
         proactivity.perform(chat_id)
     except Exception as e:
@@ -668,23 +680,17 @@ def enqueue_proactivity_loop(chat_id: int) -> None:
         proactivity.interval,
         enqueue_proactivity_loop,
         chat_id,
-        job_id=f"proactivity_perform_{chat_id}",
-        unique=True,
+        last_ts,
+        job_id=f"enqueue_proactivity_loop_{chat_id}_{int(time())}",
     )
 
 
 def enqueue_proactivity_clear(chat_id: int) -> None:
     """
-    Removes jobs that were queued using `enqueue_proactivity()` and `enqueue_proactivity_loop()`.
+    Removes job that was queued using `enqueue_proactivity()`.
     """
     try:
-        job = rq.job.Job.fetch(f"enqueue_proactivity_loop_{chat_id}", connection=queue.connection)
-        job.delete()
-    except rq.exceptions.NoSuchJobError:
-        pass
-
-    try:
-        job = rq.job.Job.fetch(f"proactivity_perform_{chat_id}", connection=queue.connection)
+        job = rq.job.Job.fetch(f"enqueue_proactivity_{chat_id}", connection=queue.connection)
         job.delete()
     except rq.exceptions.NoSuchJobError:
         pass
