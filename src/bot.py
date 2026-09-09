@@ -664,8 +664,6 @@ def enqueue_proactivity_loop(chat_id: int) -> None:
     except Exception as e:
         logger.error(e)
 
-    enqueue_proactivity_clear(chat_id, only_loop=True)
-
     queue.enqueue_in(
         proactivity.interval,
         enqueue_proactivity_loop,
@@ -675,18 +673,15 @@ def enqueue_proactivity_loop(chat_id: int) -> None:
     )
 
 
-def enqueue_proactivity_clear(chat_id: int, only_loop: bool = False) -> None:
+def enqueue_proactivity_clear(chat_id: int) -> None:
     """
     Removes jobs that were queued using `enqueue_proactivity()` and `enqueue_proactivity_loop()`.
-
-    if `only_loop = True`, then removes only `enqueue_proactivity_loop()`.
     """
-    if not only_loop:
-        try:
-            job = rq.job.Job.fetch(f"enqueue_proactivity_loop_{chat_id}", connection=queue.connection)
-            job.delete()
-        except rq.exceptions.NoSuchJobError:
-            pass
+    try:
+        job = rq.job.Job.fetch(f"enqueue_proactivity_loop_{chat_id}", connection=queue.connection)
+        job.delete()
+    except rq.exceptions.NoSuchJobError:
+        pass
 
     try:
         job = rq.job.Job.fetch(f"proactivity_perform_{chat_id}", connection=queue.connection)
