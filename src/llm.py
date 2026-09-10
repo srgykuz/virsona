@@ -376,6 +376,7 @@ class ModelClient:
         content = content.replace("»", '"')
         content = content.replace("“", '"')
         content = content.replace("”", '"')
+        content = content.strip()
 
         return content
 
