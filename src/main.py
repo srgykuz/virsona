@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 
 from src.config import configure_logger, get_logger, get_settings, get_redis
-from src.bot import handle_update, aclose as bot_aclose
+from src.handler import handle_update, aclose as handler_aclose
 from src.telegram import TelegramPoller
 from src.session import validate_personas
 from src.analytics import close as analytics_close
@@ -45,7 +45,7 @@ async def on_shutdown():
     if app.state.poller:
         await app.state.poller.aclose()
 
-    await bot_aclose()
+    await handler_aclose()
     analytics_close()
     proactivity_close()
     get_redis().close()

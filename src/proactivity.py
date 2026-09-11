@@ -132,7 +132,7 @@ def perform(chat_id: int) -> None:
     session_client.set_proactivity_state(chat_id, state)
 
     if result and result.message:
-        from src.bot import handle_response
+        from src.handler import handle_response
 
         response = ModelResponse(
             content=result.message,
