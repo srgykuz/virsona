@@ -2,18 +2,24 @@ import logging
 from functools import lru_cache
 
 from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import (
+    BaseSettings,
+    SettingsConfigDict,
+    PydanticBaseSettingsSource,
+    YamlConfigSettingsSource,
+)
 from redis import Redis
 from rq import Queue
 
 
 class Settings(BaseSettings):
     """
-    Application settings loaded from .env file and environment variables.
+    Application settings loaded from environment variables, `.env` file and `config.yml` file.
     """
 
     model_config = SettingsConfigDict(
         env_file=".env",
+        yaml_file="config.yml",
         case_sensitive=False,
     )
 
@@ -136,6 +142,25 @@ class Settings(BaseSettings):
         default="",
         description="Link to the source code that will be displayed in the help message."
     )
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        yaml_settings = YamlConfigSettingsSource(settings_cls)
+
+        return (
+            init_settings,
+            env_settings,
+            dotenv_settings,
+            file_secret_settings,
+            yaml_settings,
+        )
 
 
 def configure_logger() -> None:

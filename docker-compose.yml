@@ -24,12 +24,14 @@ services:
     ports:
       - ${APP_PORT:-8000}:8000
     volumes:
+      - ./config.yml:/app/config.yml:ro
       - ./system:/app/system:ro
       - ./system.d:/app/system.d:ro
       - ./personas:/app/personas:ro
       - ./personas.d:/app/personas.d:ro
     env_file:
-      - .env
+      - path: .env
+        required: false
     restart: unless-stopped
     logging:
       driver: json-file
@@ -53,12 +55,14 @@ services:
     deploy:
       replicas: ${WORKER_REPLICAS:-3}
     volumes:
+      - ./config.yml:/app/config.yml:ro
       - ./system:/app/system:ro
       - ./system.d:/app/system.d:ro
       - ./personas:/app/personas:ro
       - ./personas.d:/app/personas.d:ro
     env_file:
-      - .env
+      - path: .env
+        required: false
     restart: unless-stopped
     logging:
       driver: json-file

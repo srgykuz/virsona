@@ -1,4 +1,7 @@
 # Project
+config.yml
+!system/*
+!personas/*
 system.d/*
 personas.d/*
 
