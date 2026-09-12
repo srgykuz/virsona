@@ -1,7 +1,7 @@
 # Project
 config.yml
 !system/*
-!personas/*
+!personas/**
 system.d/*
 personas.d/*
 
