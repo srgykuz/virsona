@@ -68,7 +68,7 @@ class Settings(BaseSettings):
 
     system_path: str = Field(
         default="./system",
-        description="Path to the directory that stores system prompt and models params.",
+        description="Path to the directory that stores system prompt and models configs.",
     )
     personas_path: str = Field(
         default="./personas",

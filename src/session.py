@@ -146,7 +146,7 @@ class SessionClient:
         Loads persona definitions from the specified directory.
 
         Each persona should be defined in a separate directory using files:
-        params.yml and prompt.md. Empty personas are ignored.
+        config.yml and prompt.md. Empty personas are ignored.
         """
         dir = Path(self.settings.personas_path)
 
@@ -159,16 +159,16 @@ class SessionClient:
             if not persona_dir.is_dir():
                 continue
 
-            params_path = persona_dir / "params.yml"
+            config_path = persona_dir / "config.yml"
 
-            if not params_path.exists() or not params_path.is_file():
+            if not config_path.exists() or not config_path.is_file():
                 continue
 
-            params_raw = params_path.read_text(encoding="utf-8")
-            params = yaml.safe_load(params_raw)
+            config_raw = config_path.read_text(encoding="utf-8")
+            config = yaml.safe_load(config_raw)
 
-            if not isinstance(params, dict):
-                raise RuntimeError(f"Persona params file must contain a YAML object: {params_path}")
+            if not isinstance(config, dict):
+                raise RuntimeError(f"Persona config file must contain a YAML object: {config_path}")
 
             prompt_path = persona_dir / "prompt.md"
 
@@ -180,7 +180,7 @@ class SessionClient:
             if not prompt:
                 continue
 
-            persona = Persona(**params, prompt=prompt)
+            persona = Persona(**config, prompt=prompt)
             personas.append(persona)
 
         if not personas:

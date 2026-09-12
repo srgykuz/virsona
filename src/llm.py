@@ -135,7 +135,7 @@ class ProviderClient(ABC):
 class ModelClient:
     """
     Wrapper for interaction with LLM API of any provider.
-    The provider and its parameters are loaded from the named configuration in "params.yml" file.
+    The provider and its parameters are loaded from the named configuration in "config.yml" file.
     """
     def __init__(self, name: str, use_limiter: bool = True) -> None:
         self.name = name
@@ -337,18 +337,18 @@ class ModelClient:
 
     def load_config(self, name: str) -> ModelConfig:
         """
-        Loads the named chat model configuration from "params.yml" file.
+        Loads the named chat model configuration from "config.yml" file.
         """
-        path = Path(self.settings.system_path) / "params.yml"
+        path = Path(self.settings.system_path) / "config.yml"
 
         if not path.exists():
-            raise RuntimeError(f"Params file not found: {path}")
+            raise RuntimeError(f"Config file not found: {path}")
 
         text = path.read_text(encoding="utf-8")
         data = yaml.safe_load(text)
 
         if not isinstance(data, dict):
-            raise RuntimeError("Invalid params file format.")
+            raise RuntimeError("Invalid config file format.")
 
         config = data.get(name)
 
