@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://t.me/virsona_bot">
-        <img src="./assets/logo.png" alt="Telegram Bot" width="150" />
+        <img src="./assets/logo@50.png" alt="Telegram Bot" width="150" />
     </a>
 </p>
 
