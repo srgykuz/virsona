@@ -102,7 +102,9 @@ def perform(chat_id: int) -> None:
                 state.follow_up_count += 1
             else:
                 pass
-    elif delta < timedelta(hours=30):
+    elif delta < timedelta(hours=48):
+        pass
+    elif delta < timedelta(hours=60):
         if state.daily_event_count >= 2:
             pass
         elif state.last_action == ProactivityAction.DailyEvent:
@@ -118,7 +120,7 @@ def perform(chat_id: int) -> None:
                 state.daily_event_count += 1
             else:
                 pass
-    elif delta > timedelta(hours=48):
+    elif delta > timedelta(hours=120):
         if state.ping_count >= 1:
             pass
         else:
