@@ -5,6 +5,6 @@ language: en
 sleep_from: 23
 sleep_to: 8
 typing_speed: 17
-proactivity_factor: 0.6
+proactivity_factor: 0.4
 proactivity_friendship: -25
 block_friendship: -40
