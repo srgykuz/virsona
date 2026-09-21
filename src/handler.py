@@ -249,6 +249,22 @@ async def handle_command(message: TelegramMessage) -> None:
                     response = f"Relationships key `{key}` and value `{value}` are invalid."
             else:
                 response = f"Relationships key `{key}` not found."
+    elif command == "/toggle_proactivity":
+        parts = text.split(maxsplit=1)
+
+        if len(parts) < 2:
+            response = "Usage: /toggle\\_proactivity <on|off>"
+        else:
+            value = parts[1].strip().lower()
+
+            if value == "on":
+                session_client.set_proactivity_enabled(chat_id, True)
+                response = "Proactivity enabled."
+            elif value == "off":
+                session_client.set_proactivity_enabled(chat_id, False)
+                response = "Proactivity disabled."
+            else:
+                response = "Invalid value. Specify either `on` or `off`."
     elif command == "/delete" or command == "/clear_session":
         enqueue_proactivity_clear(chat_id)
         session_client.clear(chat_id)
@@ -288,6 +304,7 @@ async def handle_command(message: TelegramMessage) -> None:
             "/set\\_relationships <key> <value>\n"
             "\n"
             "*Session commands:*\n"
+            "/toggle\\_proactivity <on|off>\n"
             "/get\\_chat\\_id\n"
             "/clear\\_session"
         )

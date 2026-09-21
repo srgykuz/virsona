@@ -53,6 +53,7 @@ class SessionClient:
         pipe.delete(self._emotional_state_key(chat_id))
         pipe.delete(self._conversation_summary_key(chat_id))
         pipe.delete(self._proactivity_state_key(chat_id))
+        pipe.delete(self._proactivity_disabled_key(chat_id))
         pipe.delete(self._relationships_key(chat_id))
 
         pipe.execute()
@@ -104,6 +105,12 @@ class SessionClient:
         Returns the Redis key for storing proactivity state for a specific chat.
         """
         return f"session:{chat_id}:proactivity_state"
+
+    def _proactivity_disabled_key(self, chat_id: int) -> str:
+        """
+        Returns the Redis key for storing the proactivity disable flag for a specific chat.
+        """
+        return f"session:{chat_id}:proactivity_disabled"
 
     def _facts_key(self, chat_id: int) -> str:
         """
@@ -532,6 +539,25 @@ class SessionClient:
             return ProactivityState.loads(value)
 
         return None
+
+    def set_proactivity_enabled(self, chat_id: int, enabled: bool) -> None:
+        """
+        Enables or disables proactivity for the given chat ID.
+        """
+        key = self._proactivity_disabled_key(chat_id)
+
+        if enabled:
+            self.redis.delete(key)
+        else:
+            self.redis.set(key, "1")
+
+    def is_proactivity_disabled(self, chat_id: int) -> bool:
+        """
+        Returns whether proactivity is disabled for the given chat ID.
+        """
+        key = self._proactivity_disabled_key(chat_id)
+
+        return bool(self.redis.exists(key))
 
     def set_relationships(self, chat_id: int, relationships: Relationships) -> None:
         """
