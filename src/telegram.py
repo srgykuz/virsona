@@ -1,6 +1,6 @@
 import io
 import asyncio
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, replace
 from typing import Any, Callable, Coroutine, Dict, Optional
 
 import httpx
@@ -43,6 +43,9 @@ class TelegramMessage:
             text=data.get("text"),
             date=data.get("date"),
         )
+
+    def set(self, **kwargs) -> "TelegramMessage":
+        return replace(self, **kwargs)
 
     def user(self) -> User:
         return User(
