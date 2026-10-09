@@ -464,7 +464,11 @@ async def handle_response(chat_id: int, user_input: list[str], response: ModelRe
     if not persona:
         raise Exception("Persona is not set.")
 
-    output = response.content.split(settings.output_separator)
+    output = [response.content]
+
+    if settings.output_separator:
+        output = response.content.split(settings.output_separator)
+
     output = [s.strip() for s in output if s.strip()]
 
     for text in user_input:
