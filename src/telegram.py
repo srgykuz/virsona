@@ -1,6 +1,6 @@
 import io
 import asyncio
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, replace
 from typing import Any, Callable, Coroutine, Dict, Optional
 
 import httpx
@@ -43,6 +43,9 @@ class TelegramMessage:
             text=data.get("text"),
             date=data.get("date"),
         )
+
+    def set(self, **kwargs) -> "TelegramMessage":
+        return replace(self, **kwargs)
 
     def user(self) -> User:
         return User(
@@ -125,15 +128,19 @@ class TelegramClient:
         api_method: str,
         payload: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        timeout: float = 10.0,
+        timeout: int | None = None,
     ) -> Dict[str, Any]:
         """
         Makes an HTTP request to the Telegram Bot API and returns the JSON response.
         """
         url = f"{self.base_url}/{api_method}"
-        request_kwargs: Dict[str, Any] = {
-            "timeout": timeout,
-        }
+        request_kwargs: Dict[str, Any] = {}
+        request_timeout = timeout if (timeout is not None) else self.settings.telegram_timeout
+
+        if request_timeout:
+            request_kwargs["timeout"] = request_timeout
+        else:
+            request_kwargs["timeout"] = None
 
         if files is not None:
             request_kwargs["data"] = payload

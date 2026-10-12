@@ -63,7 +63,12 @@ async def handle_update(update: Dict[str, Any]) -> None:
 
     logger.info(f"Processing update {message.update_id} from {message.username}: {message.text}")
 
-    if message.text.startswith("/"):
+    if message.text == "/start":
+        message = message.set(text="Hello!")
+    elif message.text == "/end":
+        message = message.set(text="")
+
+    if message.text and message.text.startswith("/"):
         await handle_command(message)
     else:
         await handle_message(message)
@@ -459,7 +464,11 @@ async def handle_response(chat_id: int, user_input: list[str], response: ModelRe
     if not persona:
         raise Exception("Persona is not set.")
 
-    output = response.content.split(settings.output_separator)
+    output = [response.content]
+
+    if settings.output_separator:
+        output = response.content.split(settings.output_separator)
+
     output = [s.strip() for s in output if s.strip()]
 
     for text in user_input:

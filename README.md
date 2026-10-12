@@ -114,6 +114,7 @@ Application settings. They can be set in the `config.yml` file, the `.env` file,
 | `telegram_origin` | Telegram Bot API address where requests are sent. | `https://api.telegram.org` |
 | `telegram_webhook_enable` | Receive bot updates using webhook endpoint call instead of long polling. | `false` |
 | `telegram_webhook_secret_token` | Secret token used to authenticate webhook requests originating from Telegram. | `""` |
+| `telegram_timeout` | Timeout in seconds for Telegram Bot API requests. | `10` |
 | `google_api_key` | Google API key. | `""` |
 | `openai_api_key` | OpenAI API key. | `""` |
 | `ollama_api_key` | Ollama API key. | `""` |

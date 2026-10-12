@@ -39,6 +39,10 @@ class Settings(BaseSettings):
         default="",
         description="Secret token used to authenticate webhook requests originating from Telegram.",
     )
+    telegram_timeout: int = Field(
+        default=10,
+        description="Timeout in seconds for Telegram Bot API requests.",
+    )
 
     google_api_key: str = Field(
         default="",
