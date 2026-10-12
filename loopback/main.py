@@ -197,7 +197,11 @@ async def handle_sendMessage(token: str, request: Request) -> JSONResponse:
 
     request.app.state.message_counter += 1
 
-    log(f"[sendMessage] {payload_s} -> {update_s} -> {config.webhook_url}")
+    log(
+        f"[sendMessage] "
+        f"{payload_s} -> {update_s} -> {config.webhook_url} "
+        f"({request.app.state.message_counter}/{config.max_messages})"
+    )
 
     if config.sleep:
         await asyncio.sleep(config.sleep)
