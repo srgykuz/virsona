@@ -31,7 +31,12 @@ class Config(BaseModel):
 
     @classmethod
     def load(cls: type[Self]) -> Self:
-        path = Path.cwd() / "config.yml"
+        path = Path.cwd()
+
+        if "loopback" not in path.parts:
+            path = path / "loopback"
+
+        path = path / "config.yml"
 
         if not path.is_file():
             raise FileNotFoundError(f"Config file not found: {path}")
