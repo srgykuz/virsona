@@ -4,6 +4,7 @@ config.yml
 !personas/**
 system.d/*
 personas.d/*
+loopback/*.txt
 
 # Virtual environment
 .venv/
