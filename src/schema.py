@@ -35,6 +35,7 @@ class Persona(BaseModelJSON):
     sleep_from: int = Field(..., ge=0, le=23)
     sleep_to: int = Field(..., ge=0, le=23)
     typing_speed: int = Field(..., ge=0, le=50)
+    relationships_factor: float = Field(..., ge=0.0, le=10.0)
     proactivity_factor: float = Field(..., ge=0.0, le=1.0)
     proactivity_friendship: int = Field(..., ge=-100, le=100)
     block_friendship: int = Field(..., ge=-100, le=100)

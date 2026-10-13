@@ -240,6 +240,7 @@ For type fields see [schema.py](src/schema.py).
 | `sleep_from` | Hour when the persona starts sleeping. | `int`, [0, 23] |
 | `sleep_to` | Hour when the persona stops sleeping. | `int`, [0, 23] |
 | `typing_speed` | Typing speed in characters per second. | `int`, [0, 50] |
+| `relationships_factor` | Multiplier applied to inferred relationship deltas. | `float`, [0.0, 10.0] |
 | `proactivity_factor` | Base tendency of the persona to initiate proactive messages. | `float`, [0.0, 1.0] |
 | `proactivity_friendship` | Minimum friendship score required before proactive behavior is allowed. | `int`, [-100, 100] |
 | `block_friendship` | Minimum friendship score after which persona stops responding to the user. | `int`, [-100, 100] |

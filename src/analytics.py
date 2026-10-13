@@ -263,10 +263,17 @@ def infer_relationships(chat_id: int, history: list[Message]) -> None:
             romance=0,
         )
 
+    persona = session_client.get_persona(chat_id)
+    factor = persona.relationships_factor if persona else 1.0
+
+    delta_friendship = round(delta.friendship_delta * factor)
+    delta_trust = round(delta.trust_delta * factor)
+    delta_romance = round(delta.romance_delta * factor)
+
     updated = Relationships(
-        friendship=max(-100, min(100, current.friendship + delta.friendship_delta)),
-        trust=max(-100, min(100, current.trust + delta.trust_delta)),
-        romance=max(-100, min(100, current.romance + delta.romance_delta)),
+        friendship=max(-100, min(100, current.friendship + delta_friendship)),
+        trust=max(-100, min(100, current.trust + delta_trust)),
+        romance=max(-100, min(100, current.romance + delta_romance)),
     )
 
     session_client.set_relationships(chat_id, updated)
